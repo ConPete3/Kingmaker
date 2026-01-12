@@ -1,96 +1,256 @@
-import React from "react";
-import type { GlobalTile } from "../game/types";
-import { axialToPixel, hexPolygonPoints } from "../game/logic/hex";
+/**
+ * HexMap Component
+ *
+ * This component renders the hexagonal grid for the Global Map view.
+ * It's responsible for:
+ * - Drawing all hex tiles with proper geometry
+ * - Showing the party token at the current location
+ * - Implementing fog of war (visual difference for undiscovered tiles)
+ * - Handling click events for tile selection
+ *
+ * Technical Details:
+ * - Uses SVG for crisp, scalable graphics
+ * - "Pointy-top" hex orientation (vertices at top and bottom)
+ * - Axial coordinate system for hex math
+ * - CSS classes for theming consistency
+ *
+ * Hex Geometry Explanation:
+ * We use pointy-top hexes where:
+ * - Each hex has a vertex at the top (not a flat edge)
+ * - The hex radius (size) is the distance from center to any vertex
+ * - The six vertices are at angles: -30°, 30°, 90°, 150°, 210°, 270°
+ *
+ * See hex.ts for the coordinate system math.
+ */
 
-type Props = {
+import React from 'react';
+import type { GlobalTile } from '../game/types';
+import { axialToPixel, hexPolygonPoints } from '../game/logic/hex';
+import './HexMap.css';
+
+/**
+ * Props for the HexMap component.
+ */
+interface HexMapProps {
+  /** Array of all tiles to render */
   tiles: GlobalTile[];
+
+  /** ID of the tile where the party is currently located */
   partyTileId: string;
+
+  /**
+   * Callback fired when a tile is clicked.
+   * The parent component decides what to do (validate movement, etc.)
+   */
   onTileClick: (tileId: string) => void;
-};
+}
 
-export function HexMap({ tiles, partyTileId, onTileClick }: Props) {
-  const size = 52;            // hex radius
-  const padding = 24;
+/**
+ * Get the fill color for a tile based on its state.
+ *
+ * Color scheme:
+ * - Capital (discovered): Gold color to show importance
+ * - Wild (discovered): Forest green for explored territory
+ * - Undiscovered: Dark gray to represent fog of war
+ *
+ * @param tile - The tile to get the color for
+ * @returns CSS color value
+ */
+function getTileFillColor(tile: GlobalTile): string {
+  if (!tile.discovered) {
+    // Fog of war - dark and mysterious
+    return '#2d2d2d';
+  }
 
-  // Convert to pixel centers and compute bounds for viewBox
-  const centers = tiles.map((t) => {
-    const p = axialToPixel(t.axial, size);
-    return { ...t, cx: p.x, cy: p.y };
+  if (tile.kind === 'capital') {
+    // Capital is gold/yellow - the crown jewel
+    return '#ffd700';
+  }
+
+  // Discovered wild tiles - green terrain
+  return '#4a6741';
+}
+
+/**
+ * Get the stroke (border) color for a tile.
+ * Darker stroke helps tiles stand out from each other.
+ */
+function getTileStrokeColor(tile: GlobalTile): string {
+  if (!tile.discovered) {
+    return '#1a1a1a';  // Very dark for undiscovered
+  }
+  return '#2c2c2c';    // Dark gray for discovered
+}
+
+/**
+ * HexMap - Renders the hexagonal tile grid
+ *
+ * This component creates an SVG containing:
+ * 1. A group for each tile (hexagon polygon + label)
+ * 2. The party token (circle with text) on top
+ *
+ * The viewBox is calculated dynamically to fit all tiles with padding.
+ */
+export function HexMap({
+  tiles,
+  partyTileId,
+  onTileClick,
+}: HexMapProps): React.ReactElement {
+
+  // Hex size (radius from center to vertex)
+  // Larger size = bigger hexes, adjust as needed for your layout
+  const size = 60;
+
+  // Padding around the entire map
+  const padding = 30;
+
+  // Convert each tile's axial coordinates to pixel coordinates
+  // This gives us the center point for each hex in screen space
+  const tilesWithPixels = tiles.map((tile) => {
+    const pixel = axialToPixel(tile.axial, size);
+    return {
+      ...tile,
+      cx: pixel.x,   // Center X in pixels
+      cy: pixel.y,   // Center Y in pixels
+    };
   });
 
-  const minX = Math.min(...centers.map((c) => c.cx)) - size - padding;
-  const maxX = Math.max(...centers.map((c) => c.cx)) + size + padding;
-  const minY = Math.min(...centers.map((c) => c.cy)) - size - padding;
-  const maxY = Math.max(...centers.map((c) => c.cy)) + size + padding;
+  // Calculate the bounding box to set up the SVG viewBox
+  // This ensures all hexes are visible with proper padding
+  const allX = tilesWithPixels.map((t) => t.cx);
+  const allY = tilesWithPixels.map((t) => t.cy);
 
-  const width = maxX - minX;
-  const height = maxY - minY;
+  const minX = Math.min(...allX) - size - padding;
+  const maxX = Math.max(...allX) + size + padding;
+  const minY = Math.min(...allY) - size - padding;
+  const maxY = Math.max(...allY) + size + padding;
 
-  const party = centers.find((c) => c.id === partyTileId);
+  const viewBoxWidth = maxX - minX;
+  const viewBoxHeight = maxY - minY;
+
+  // Find the party's current tile for rendering the token
+  const partyTile = tilesWithPixels.find((t) => t.id === partyTileId);
 
   return (
     <svg
+      className="hex-map"
       width="100%"
       height="420"
-      viewBox={`${minX} ${minY} ${width} ${height}`}
+      viewBox={`${minX} ${minY} ${viewBoxWidth} ${viewBoxHeight}`}
       role="img"
-      aria-label="Global hex map"
-      style={{ display: "block", background: "#f7f7f7", borderRadius: 12 }}
+      aria-label="Kingdom map showing hexagonal territories"
     >
-      {centers.map((t) => {
-        const isCapital = t.kind === "capital";
-        const fill = t.discovered ? (isCapital ? "#ffffff" : "#eaeaea") : "#bdbdbd";
+      {/* ==============================================
+          TILE RENDERING
+          Each tile is a group containing the hex polygon and label
+          ============================================== */}
+      {tilesWithPixels.map((tile) => {
+        const fillColor = getTileFillColor(tile);
+        const strokeColor = getTileStrokeColor(tile);
+
+        // Determine text color based on background
+        // Light text on dark backgrounds, dark text on light backgrounds
+        const textColor = tile.discovered
+          ? (tile.kind === 'capital' ? '#1a1a1a' : '#e8e8e8')
+          : '#666666';
 
         return (
-          <g key={t.id} onClick={() => onTileClick(t.id)} style={{ cursor: "pointer" }}>
+          <g
+            key={tile.id}
+            className="hex-tile"
+            onClick={() => onTileClick(tile.id)}
+            style={{ cursor: 'pointer' }}
+            role="button"
+            aria-label={`${tile.discovered ? tile.name : 'Unknown territory'}. Click to ${tile.id === partyTileId ? 'interact' : 'move here'}`}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                onTileClick(tile.id);
+              }
+            }}
+          >
+            {/* The hexagon polygon */}
             <polygon
-              points={hexPolygonPoints({ x: t.cx, y: t.cy }, size)}
-              fill={fill}
-              stroke="#000"
-              strokeWidth={1}  // thin black line
+              points={hexPolygonPoints({ x: tile.cx, y: tile.cy }, size)}
+              fill={fillColor}
+              stroke={strokeColor}
+              strokeWidth={2}
+              className="hex-polygon"
             />
-            {/* label */}
-            {t.discovered ? (
+
+            {/* Tile label - shows name if discovered, "???" otherwise */}
+            <text
+              x={tile.cx}
+              y={tile.cy}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className="hex-label"
+              fill={textColor}
+              fontSize="11"
+              fontWeight={tile.kind === 'capital' ? 'bold' : 'normal'}
+            >
+              {tile.discovered ? tile.name : '???'}
+            </text>
+
+            {/* Visual indicator for capital tile */}
+            {tile.kind === 'capital' && tile.discovered && (
               <text
-                x={t.cx}
-                y={t.cy}
+                x={tile.cx}
+                y={tile.cy - 20}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="12"
+                fill="#1a1a1a"
+                fontSize="14"
+                fontWeight="bold"
               >
-                {t.name}
-              </text>
-            ) : (
-              <text
-                x={t.cx}
-                y={t.cy}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="12"
-              >
-                ???
+                [Crown]
               </text>
             )}
           </g>
         );
       })}
 
-      {/* Party token */}
-      {party ? (
-        <g>
-          <circle cx={party.cx} cy={party.cy} r={12} fill="#2b6cb0" stroke="#000" strokeWidth={1} />
+      {/* ==============================================
+          PARTY TOKEN
+          Rendered on top of tiles so it's always visible
+          ============================================== */}
+      {partyTile && (
+        <g className="party-token">
+          {/* Outer glow effect for visibility */}
+          <circle
+            cx={partyTile.cx}
+            cy={partyTile.cy + 22}
+            r={16}
+            fill="rgba(52, 152, 219, 0.3)"
+            className="party-glow"
+          />
+
+          {/* Main party circle */}
+          <circle
+            cx={partyTile.cx}
+            cy={partyTile.cy + 22}
+            r={14}
+            fill="#3498db"
+            stroke="#2c3e50"
+            strokeWidth={2}
+            className="party-circle"
+          />
+
+          {/* Party label */}
           <text
-            x={party.cx}
-            y={party.cy}
+            x={partyTile.cx}
+            y={partyTile.cy + 22}
             textAnchor="middle"
             dominantBaseline="middle"
-            fontSize="10"
-            fill="#fff"
+            fill="#ffffff"
+            fontSize="8"
+            fontWeight="bold"
+            className="party-label"
           >
-            Party
+            PARTY
           </text>
         </g>
-      ) : null}
+      )}
     </svg>
   );
 }

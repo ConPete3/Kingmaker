@@ -1,0 +1,203 @@
+/**
+ * GlobalMapScreen Styles
+ *
+ * Styling for the main overworld map view.
+ * Uses CSS custom properties defined in index.css for consistency.
+ */
+
+/* =================================================================
+   SCREEN LAYOUT
+   ================================================================= */
+
+.global-map-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-lg);
+  min-height: 100vh;
+  gap: var(--space-lg);
+}
+
+/* =================================================================
+   HEADER
+   ================================================================= */
+
+.global-map-header {
+  text-align: center;
+}
+
+.global-map-title {
+  font-size: var(--font-size-2xl);
+  color: var(--color-capital);  /* Gold color for the title */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: var(--space-xs);
+}
+
+.global-map-subtitle {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* =================================================================
+   CURRENT LOCATION DISPLAY
+   ================================================================= */
+
+.current-location {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-bg-accent);
+}
+
+.location-label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.location-name {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* =================================================================
+   HEX MAP CONTAINER
+   ================================================================= */
+
+.hex-map-container {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--color-bg-accent);
+}
+
+/* =================================================================
+   ACTION BUTTONS
+   ================================================================= */
+
+.action-buttons {
+  display: flex;
+  gap: var(--space-md);
+  min-height: 48px;  /* Prevent layout shift when button appears/disappears */
+}
+
+.enter-capital-btn {
+  font-size: var(--font-size-lg);
+  padding: var(--space-md) var(--space-xl);
+  box-shadow: var(--shadow-md);
+
+  /* Subtle animation to draw attention */
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 215, 0, 0);
+  }
+}
+
+/* =================================================================
+   INSTRUCTIONS PANEL
+   ================================================================= */
+
+.instructions-panel {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  max-width: 500px;
+  width: 100%;
+}
+
+.instructions-title {
+  color: var(--color-text-accent);
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-lg);
+}
+
+.instructions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.instructions-list li {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  padding-left: var(--space-md);
+  position: relative;
+}
+
+.instructions-list li::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: var(--color-text-accent);
+}
+
+.instructions-list li strong {
+  color: var(--color-text-primary);
+}
+
+/* =================================================================
+   MAP LEGEND
+   ================================================================= */
+
+.map-legend {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.legend-title {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.legend-capital {
+  background-color: var(--color-capital);
+}
+
+.legend-discovered {
+  background-color: var(--color-discovered);
+}
+
+.legend-undiscovered {
+  background-color: var(--color-undiscovered);
+}
+
+.legend-party {
+  background-color: var(--color-party);
+  border-radius: 50%;
+}
