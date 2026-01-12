@@ -1,0 +1,106 @@
+/**
+ * HexMap Component Styles
+ *
+ * Styles for the hexagonal map SVG component.
+ * Includes hover effects, transitions, and accessibility features.
+ */
+
+/* =================================================================
+   SVG CONTAINER
+   ================================================================= */
+
+.hex-map {
+  display: block;
+  border-radius: var(--radius-md);
+  /* Subtle background for the map area */
+  background: linear-gradient(
+    135deg,
+    rgba(26, 26, 46, 0.8) 0%,
+    rgba(22, 33, 62, 0.8) 100%
+  );
+}
+
+/* =================================================================
+   HEX TILES
+   ================================================================= */
+
+.hex-tile {
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+/* Hover effect - subtle brightness increase */
+.hex-tile:hover .hex-polygon {
+  filter: brightness(1.15);
+}
+
+/* Focus indicator for keyboard navigation */
+.hex-tile:focus {
+  outline: none;
+}
+
+.hex-tile:focus .hex-polygon {
+  stroke: var(--color-text-accent);
+  stroke-width: 3;
+}
+
+/* The hexagon polygon itself */
+.hex-polygon {
+  transition: fill 0.2s ease, stroke 0.2s ease, filter 0.15s ease;
+}
+
+/* Tile labels */
+.hex-label {
+  pointer-events: none;  /* Allow clicks to pass through to polygon */
+  user-select: none;
+  font-family: var(--font-family);
+}
+
+/* =================================================================
+   PARTY TOKEN
+   ================================================================= */
+
+.party-token {
+  pointer-events: none;  /* Party token shouldn't intercept clicks */
+}
+
+/* Glow effect animation */
+.party-glow {
+  animation: party-pulse 2s ease-in-out infinite;
+}
+
+@keyframes party-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    r: 16;
+  }
+  50% {
+    opacity: 0.8;
+    r: 20;
+  }
+}
+
+/* Main party circle */
+.party-circle {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* Party label text */
+.party-label {
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =================================================================
+   ACCESSIBILITY
+   ================================================================= */
+
+/* Reduced motion preference - disable animations */
+@media (prefers-reduced-motion: reduce) {
+  .hex-tile,
+  .hex-polygon,
+  .party-glow {
+    transition: none;
+    animation: none;
+  }
+}

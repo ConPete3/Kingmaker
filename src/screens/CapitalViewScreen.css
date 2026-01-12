@@ -1,0 +1,242 @@
+/**
+ * CapitalViewScreen Styles
+ *
+ * Styling for the capital city management view.
+ * Uses a gold accent theme to distinguish from wild tile views.
+ */
+
+/* =================================================================
+   SCREEN LAYOUT
+   ================================================================= */
+
+.capital-view-screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: var(--space-lg);
+}
+
+/* =================================================================
+   HEADER
+   ================================================================= */
+
+.capital-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.back-button::before {
+  content: "<";
+  font-weight: bold;
+}
+
+.capital-title-area {
+  text-align: center;
+  flex: 1;
+}
+
+.capital-title {
+  font-size: var(--font-size-2xl);
+  color: var(--color-capital);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.capital-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.resource-summary {
+  background-color: var(--color-bg-secondary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+.resource-placeholder {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* =================================================================
+   MAIN CONTENT
+   ================================================================= */
+
+.capital-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* =================================================================
+   SECTION CARDS
+   ================================================================= */
+
+.capital-section {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.section-title {
+  color: var(--color-capital);
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-bg-accent);
+}
+
+/* =================================================================
+   CITY OVERVIEW PANEL
+   ================================================================= */
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.overview-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md);
+  background-color: var(--color-bg-accent);
+  border-radius: var(--radius-md);
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.stat-value {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* =================================================================
+   BUILDINGS PANEL
+   ================================================================= */
+
+.placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.building-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  border: 2px dashed var(--color-bg-accent);
+  border-radius: var(--radius-md);
+  min-height: 100px;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.building-slot.empty {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.slot-label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.slot-hint {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  opacity: 0.7;
+  margin-top: var(--space-xs);
+}
+
+.coming-soon-text {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+}
+
+/* =================================================================
+   ACTIONS PANEL
+   ================================================================= */
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+}
+
+.capital-action {
+  padding: var(--space-md);
+  text-align: center;
+}
+
+/* =================================================================
+   EVENTS PANEL
+   ================================================================= */
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background-color: var(--color-bg-accent);
+  border-radius: var(--radius-sm);
+}
+
+.event-icon {
+  color: var(--color-capital);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.event-text {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+/* =================================================================
+   FOOTER
+   ================================================================= */
+
+.capital-footer {
+  margin-top: var(--space-xl);
+  text-align: center;
+  padding: var(--space-md);
+}
+
+.footer-text {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+}

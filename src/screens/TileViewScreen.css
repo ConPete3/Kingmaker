@@ -1,0 +1,188 @@
+/**
+ * TileViewScreen Styles
+ *
+ * Styling for the detailed tile view.
+ * Uses CSS custom properties defined in index.css for consistency.
+ */
+
+/* =================================================================
+   SCREEN LAYOUT
+   ================================================================= */
+
+.tile-view-screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: var(--space-lg);
+}
+
+/* =================================================================
+   HEADER WITH NAVIGATION
+   ================================================================= */
+
+.tile-view-header {
+  margin-bottom: var(--space-lg);
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.back-button::before {
+  content: "<";
+  font-weight: bold;
+}
+
+/* =================================================================
+   MAIN CONTENT AREA
+   ================================================================= */
+
+.tile-view-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  flex: 1;
+}
+
+/* =================================================================
+   TILE INFORMATION CARD
+   ================================================================= */
+
+.tile-info-card {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-bg-accent);
+}
+
+.tile-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-md);
+  color: var(--color-text-accent);
+}
+
+.tile-name {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.tile-type-badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--color-bg-accent);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.tile-description {
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+  margin-bottom: var(--space-md);
+}
+
+.tile-coords {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-bg-accent);
+}
+
+.coords-label {
+  opacity: 0.7;
+}
+
+.coords-value {
+  font-family: monospace;
+  color: var(--color-text-primary);
+}
+
+/* =================================================================
+   MAP PLACEHOLDER
+   ================================================================= */
+
+.tile-map-placeholder {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 600px;
+  width: 100%;
+  box-shadow: var(--shadow-md);
+  border: 2px dashed var(--color-bg-accent);
+}
+
+.placeholder-content {
+  text-align: center;
+}
+
+.placeholder-title {
+  color: var(--color-text-accent);
+  margin-bottom: var(--space-md);
+}
+
+.placeholder-text {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.placeholder-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+}
+
+.placeholder-list li {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.placeholder-list li::before {
+  content: "- ";
+  color: var(--color-text-accent);
+}
+
+/* =================================================================
+   ACTIONS PANEL
+   ================================================================= */
+
+.tile-actions {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  max-width: 600px;
+  width: 100%;
+}
+
+.actions-title {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+.actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.action-btn {
+  width: 100%;
+  justify-content: center;
+}
