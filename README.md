@@ -1,3 +1,3 @@
 # Kingmaker
 
-Hex-based kingdom-building exploration game
+Kingdom-building exploration game
