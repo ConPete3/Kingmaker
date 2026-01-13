@@ -1,0 +1,66 @@
+/**
+ * HowToPlay Component Styles
+ */
+
+.how-to-play {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-bg-accent);
+  overflow: hidden;
+}
+
+.how-to-play-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.how-to-play-toggle:hover {
+  background-color: var(--color-bg-accent);
+}
+
+.how-to-play-title {
+  font-weight: 600;
+  color: var(--color-text-accent);
+}
+
+.toggle-icon {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.instructions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: 0 var(--space-md) var(--space-sm);
+  margin: 0;
+}
+
+.instructions-list li {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  padding-left: var(--space-md);
+  position: relative;
+}
+
+.instructions-list li::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: var(--color-text-accent);
+}
+
+.instructions-list li strong {
+  color: var(--color-text-primary);
+}

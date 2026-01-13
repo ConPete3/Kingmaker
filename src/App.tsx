@@ -131,17 +131,18 @@ export default function App() {
   // ==============================================
 
   /**
-   * Check if a move between two tiles is valid (they are adjacent).
+   * Check if a move between two tiles is valid.
    *
-   * Uses the axial coordinate system to find neighbors.
-   * A move is valid only if the destination is one of the 6
-   * hexes surrounding the source.
+   * Movement rules:
+   * 1. Tiles must be adjacent (one of the 6 neighboring hexes)
+   * 2. Movement between different regions is NOT allowed
+   * 3. Exception: Moving to/from the capital is always allowed (if adjacent)
    *
    * @param fromId - ID of the tile moving from
    * @param toId - ID of the tile moving to
    * @returns true if the move is valid
    */
-  function isAdjacentMove(fromId: string, toId: string): boolean {
+  function isValidMove(fromId: string, toId: string): boolean {
     const from = tilesById.get(fromId);
     const to = tilesById.get(toId);
 
@@ -151,8 +152,17 @@ export default function App() {
     // Get all 6 neighboring positions of the source tile
     const neighbors = axialNeighbors(from.axial);
 
-    // Check if any neighbor matches the destination's coordinates
-    return neighbors.some((neighbor) => axialEquals(neighbor, to.axial));
+    // Check if tiles are adjacent
+    const isAdjacent = neighbors.some((neighbor) => axialEquals(neighbor, to.axial));
+    if (!isAdjacent) return false;
+
+    // Capital is a hub - can always move to/from it
+    if (from.kind === 'capital' || to.kind === 'capital') {
+      return true;
+    }
+
+    // For non-capital tiles, must be in the same region
+    return from.region === to.region;
   }
 
   /**
@@ -184,6 +194,7 @@ export default function App() {
    *
    * Movement Rules:
    * - Can only move to adjacent tiles (no teleporting!)
+   * - Cannot move between different regions (must go through capital)
    * - Clicking current tile does nothing
    * - Moving to a wild tile opens the Tile View
    * - Moving to the Capital tile stays on Global Map (use button to enter)
@@ -194,9 +205,9 @@ export default function App() {
     // Ignore clicks on the current tile
     if (tileId === partyTileId) return;
 
-    // Validate that the destination is adjacent
-    if (!isAdjacentMove(partyTileId, tileId)) {
-      // For now, silently ignore non-adjacent moves
+    // Validate that the move is valid (adjacent + same region or capital)
+    if (!isValidMove(partyTileId, tileId)) {
+      // For now, silently ignore invalid moves
       // Future enhancement: show feedback to player
       return;
     }

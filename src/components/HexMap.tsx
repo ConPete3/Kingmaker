@@ -3,9 +3,8 @@
  *
  * This component renders the hexagonal grid for the Global Map view.
  * It's responsible for:
- * - Drawing all hex tiles with proper geometry
+ * - Drawing all hex tiles with proper geometry and region-based colors
  * - Showing the party token at the current location
- * - Implementing fog of war (visual difference for undiscovered tiles)
  * - Handling click events for tile selection
  *
  * Technical Details:
@@ -13,6 +12,7 @@
  * - "Pointy-top" hex orientation (vertices at top and bottom)
  * - Axial coordinate system for hex math
  * - CSS classes for theming consistency
+ * - All tiles are fully visible with their names displayed
  *
  * Hex Geometry Explanation:
  * We use pointy-top hexes where:
@@ -46,31 +46,25 @@ interface HexMapProps {
 }
 
 /**
- * Get the fill color for a tile based on its state and region.
+ * Get the fill color for a tile based on its region.
  *
  * Color scheme:
- * - Capital (discovered): Gold color to show importance
- * - Greenbelt (discovered): Forest green
- * - Pitax (discovered): Brown (earthy, rival kingdom)
- * - Brevoy (discovered): Steel blue (nobility)
- * - Tuskwater Bay (discovered): Ocean blue (maritime)
- * - Undiscovered: Dark gray to represent fog of war
+ * - Capital: Gold color to show importance
+ * - Greenbelt: Forest green
+ * - Pitax: Brown (earthy, rival kingdom)
+ * - Brevoy: Steel blue (nobility)
+ * - Tuskwater Bay: Ocean blue (maritime)
  *
  * @param tile - The tile to get the color for
  * @returns CSS color value
  */
 function getTileFillColor(tile: GlobalTile): string {
-  if (!tile.discovered) {
-    // Fog of war - dark and mysterious
-    return '#2d2d2d';
-  }
-
   if (tile.kind === 'capital') {
     // Capital is gold/yellow - the crown jewel
     return '#ffd700';
   }
 
-  // Region-specific colors for discovered wild tiles
+  // Region-specific colors for all tiles
   const regionColors: Record<string, string> = {
     'Greenbelt': '#4a6741',      // Forest green
     'Pitax': '#6b4423',          // Brown (earthy)
@@ -85,11 +79,8 @@ function getTileFillColor(tile: GlobalTile): string {
  * Get the stroke (border) color for a tile.
  * Darker stroke helps tiles stand out from each other.
  */
-function getTileStrokeColor(tile: GlobalTile): string {
-  if (!tile.discovered) {
-    return '#1a1a1a';  // Very dark for undiscovered
-  }
-  return '#2c2c2c';    // Dark gray for discovered
+function getTileStrokeColor(_tile: GlobalTile): string {
+  return '#2c2c2c';    // Dark gray for all tiles
 }
 
 /**
@@ -183,11 +174,10 @@ export function HexMap({
   return (
     <svg
       className="hex-map"
-      width="100%"
-      height="420"
       viewBox={`${minX} ${minY} ${viewBoxWidth} ${viewBoxHeight}`}
       role="img"
       aria-label="Kingdom map showing hexagonal territories"
+      preserveAspectRatio="xMidYMid meet"
     >
       {/* ==============================================
           TILE RENDERING
@@ -199,9 +189,7 @@ export function HexMap({
 
         // Determine text color based on background
         // Light text on dark backgrounds, dark text on light backgrounds
-        const textColor = tile.discovered
-          ? (tile.kind === 'capital' ? '#1a1a1a' : '#e8e8e8')
-          : '#666666';
+        const textColor = tile.kind === 'capital' ? '#1a1a1a' : '#e8e8e8';
 
         return (
           <g
@@ -210,7 +198,7 @@ export function HexMap({
             onClick={() => onTileClick(tile.id)}
             style={{ cursor: 'pointer' }}
             role="button"
-            aria-label={`${tile.discovered ? tile.name : 'Unknown territory'}. Click to ${tile.id === partyTileId ? 'interact' : 'move here'}`}
+            aria-label={`${tile.name}. Click to ${tile.id === partyTileId ? 'interact' : 'move here'}`}
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -227,41 +215,25 @@ export function HexMap({
               className="hex-polygon"
             />
 
-            {/* Tile label - shows name if discovered, "???" otherwise */}
-            {tile.discovered ? (
-              // Multi-line text for discovered tiles
-              splitTileName(tile.name).map((line, index, arr) => (
-                <text
-                  key={index}
-                  x={tile.cx}
-                  y={tile.cy + (index - (arr.length - 1) / 2) * 12}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="hex-label"
-                  fill={textColor}
-                  fontSize="10"
-                  fontWeight={tile.kind === 'capital' ? 'bold' : 'normal'}
-                >
-                  {line}
-                </text>
-              ))
-            ) : (
-              // Single "???" for undiscovered tiles
+            {/* Tile label - shows the tile name */}
+            {splitTileName(tile.name).map((line, index, arr) => (
               <text
+                key={index}
                 x={tile.cx}
-                y={tile.cy}
+                y={tile.cy + (index - (arr.length - 1) / 2) * 12}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 className="hex-label"
                 fill={textColor}
-                fontSize="11"
+                fontSize="10"
+                fontWeight={tile.kind === 'capital' ? 'bold' : 'normal'}
               >
-                ???
+                {line}
               </text>
-            )}
+            ))}
 
             {/* Visual indicator for capital tile */}
-            {tile.kind === 'capital' && tile.discovered && (
+            {tile.kind === 'capital' && (
               <text
                 x={tile.cx}
                 y={tile.cy - 20}
