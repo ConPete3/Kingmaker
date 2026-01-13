@@ -58,9 +58,21 @@
   font-size: var(--font-size-sm);
 }
 
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 .location-name {
   color: var(--color-text-primary);
   font-weight: 600;
+}
+
+.location-region {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-style: italic;
 }
 
 /* =================================================================

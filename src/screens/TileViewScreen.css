@@ -21,6 +21,9 @@
    ================================================================= */
 
 .tile-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: var(--space-lg);
 }
 
@@ -34,6 +37,32 @@
   content: "<";
   font-weight: bold;
 }
+
+/* Region indicator in header */
+.region-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.region-label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.region-name {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+/* Region-specific colors */
+.region-greenbelt { color: var(--color-greenbelt); }
+.region-pitax { color: var(--color-pitax); }
+.region-brevoy { color: var(--color-brevoy); }
+.region-tuskwater-bay { color: var(--color-tuskwater-bay); }
 
 /* =================================================================
    MAIN CONTENT AREA
@@ -72,6 +101,40 @@
   font-size: var(--font-size-2xl);
   color: var(--color-text-primary);
   margin-bottom: var(--space-sm);
+}
+
+.tile-region-badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
+  margin-right: var(--space-sm);
+}
+
+/* Region-specific badge colors */
+.tile-region-badge.region-greenbelt {
+  background-color: rgba(34, 139, 34, 0.2);
+  color: var(--color-greenbelt);
+  border: 1px solid var(--color-greenbelt);
+}
+
+.tile-region-badge.region-pitax {
+  background-color: rgba(139, 69, 19, 0.2);
+  color: var(--color-pitax);
+  border: 1px solid var(--color-pitax);
+}
+
+.tile-region-badge.region-brevoy {
+  background-color: rgba(70, 130, 180, 0.2);
+  color: var(--color-brevoy);
+  border: 1px solid var(--color-brevoy);
+}
+
+.tile-region-badge.region-tuskwater-bay {
+  background-color: rgba(30, 144, 255, 0.2);
+  color: var(--color-tuskwater-bay);
+  border: 1px solid var(--color-tuskwater-bay);
 }
 
 .tile-type-badge {

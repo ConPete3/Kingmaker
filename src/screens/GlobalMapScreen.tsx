@@ -17,7 +17,7 @@
  * our state management centralized and easier to debug.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { GlobalTile } from '../game/types';
 import { HexMap } from '../components/HexMap';
 import './GlobalMapScreen.css';
@@ -36,6 +36,9 @@ interface GlobalMapScreenProps {
   /** ID of the tile where the party is currently located */
   partyTileId: string;
 
+  /** The current custom name of the capital city */
+  capitalName: string;
+
   /**
    * Callback fired when player clicks a tile to attempt movement.
    * The App.tsx component handles validation (checking if adjacent, etc.)
@@ -47,6 +50,12 @@ interface GlobalMapScreenProps {
    * This transitions to the Capital View screen.
    */
   onEnterCapital: () => void;
+
+  /**
+   * Callback to update the capital name.
+   * Returns true if the name was valid and updated, false otherwise.
+   */
+  onUpdateCapitalName: (newName: string) => boolean;
 }
 
 /**
@@ -58,9 +67,27 @@ interface GlobalMapScreenProps {
 export function GlobalMapScreen({
   tiles,
   partyTileId,
+  capitalName,
   onAttemptMoveTo,
   onEnterCapital,
+  onUpdateCapitalName,
 }: GlobalMapScreenProps): React.ReactElement {
+  // ==============================================
+  // STATE FOR NAME EDITING
+  // ==============================================
+
+  /** Whether the name edit modal is currently shown */
+  const [isEditingName, setIsEditingName] = useState(false);
+
+  /** The current value in the edit input field */
+  const [editedName, setEditedName] = useState(capitalName);
+
+  /** Error message to show if validation fails */
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  // ==============================================
+  // DERIVED STATE
+  // ==============================================
 
   // Check if the party is currently on the capital tile
   // We use this to conditionally show the "Enter Capital" button
@@ -69,9 +96,104 @@ export function GlobalMapScreen({
   // Find the current tile to display its name
   const currentTile = tiles.find(t => t.id === partyTileId);
   const currentTileName = currentTile?.name ?? 'Unknown Location';
+  const currentRegion = currentTile?.region;
+
+  // ==============================================
+  // NAME EDITING HANDLERS
+  // ==============================================
+
+  function startEditing(): void {
+    setEditedName(capitalName);
+    setNameError(null);
+    setIsEditingName(true);
+  }
+
+  function cancelEditing(): void {
+    setIsEditingName(false);
+    setNameError(null);
+  }
+
+  function saveEditedName(): void {
+    const trimmed = editedName.trim();
+    if (trimmed.length === 0) {
+      setNameError('Name cannot be empty');
+      return;
+    }
+    if (trimmed.length > 30) {
+      setNameError('Name must be 30 characters or less');
+      return;
+    }
+    const success = onUpdateCapitalName(trimmed);
+    if (success) {
+      setIsEditingName(false);
+      setNameError(null);
+    } else {
+      setNameError('Invalid name');
+    }
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent): void {
+    if (e.key === 'Enter') {
+      saveEditedName();
+    } else if (e.key === 'Escape') {
+      cancelEditing();
+    }
+  }
 
   return (
     <div className="global-map-screen">
+      {/* ==============================================
+          NAME EDIT MODAL
+          ============================================== */}
+      {isEditingName && (
+        <div className="modal-overlay" onClick={cancelEditing}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Rename Your Capital</h2>
+
+            <div className="modal-input-group">
+              <label htmlFor="capital-name-input" className="modal-label">
+                Capital Name
+              </label>
+              <input
+                id="capital-name-input"
+                type="text"
+                className={`modal-input ${nameError ? 'input-error' : ''}`}
+                value={editedName}
+                onChange={(e) => {
+                  setEditedName(e.target.value);
+                  setNameError(null);
+                }}
+                onKeyDown={handleKeyDown}
+                maxLength={30}
+                autoFocus
+                placeholder="Enter capital name..."
+              />
+              {nameError && (
+                <span className="error-message">{nameError}</span>
+              )}
+              <span className="char-count">
+                {editedName.length}/30 characters
+              </span>
+            </div>
+
+            <div className="modal-buttons">
+              <button
+                className="btn btn-secondary"
+                onClick={cancelEditing}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={saveEditedName}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ==============================================
           HEADER SECTION
           Shows the game title and current location
@@ -87,7 +209,22 @@ export function GlobalMapScreen({
           ============================================== */}
       <div className="current-location">
         <span className="location-label">Current Location:</span>
-        <span className="location-name">{currentTileName}</span>
+        <div className="location-info">
+          <span className="location-name">{currentTileName}</span>
+          {isOnCapital && (
+            <button
+              className="btn-edit-name-small"
+              onClick={startEditing}
+              aria-label="Edit capital name"
+              title="Edit capital name"
+            >
+              [Edit]
+            </button>
+          )}
+          {currentRegion && currentRegion !== 'Capital' && (
+            <span className="location-region">({currentRegion} Region)</span>
+          )}
+        </div>
       </div>
 
       {/* ==============================================

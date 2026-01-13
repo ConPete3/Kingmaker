@@ -45,6 +45,13 @@
   flex: 1;
 }
 
+.capital-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
 .capital-title {
   font-size: var(--font-size-2xl);
   color: var(--color-capital);

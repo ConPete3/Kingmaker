@@ -13,26 +13,38 @@
  * - Recruit units and adventurers
  * - Make kingdom-wide decisions
  *
+ * Features:
+ * - Editable capital name (defaults to "CALMAFAR")
+ * - Category panels for future features
+ * - "Back to Global Map" navigation
+ *
  * Future Features (not implemented yet):
  * - Building grid showing constructed structures
  * - Resource management panel
  * - Construction queue
  * - Population and happiness indicators
  * - Kingdom events and decisions
- *
- * Current Implementation:
- * - Placeholder UI showing the concept
- * - "Back to Global Map" navigation
- * - Category panels for future features
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import './CapitalViewScreen.css';
 
 /**
  * Props for the CapitalViewScreen component.
  */
 interface CapitalViewScreenProps {
+  /**
+   * The current name of the capital city.
+   * Defaults to "CALMAFAR" but can be customized by the player.
+   */
+  capitalName: string;
+
+  /**
+   * Callback to update the capital name.
+   * Returns true if the name was valid and updated, false otherwise.
+   */
+  onUpdateCapitalName: (newName: string) => boolean;
+
   /**
    * Callback to return to the Global Map.
    * The party stays on the capital tile when returning.
@@ -43,14 +55,144 @@ interface CapitalViewScreenProps {
 /**
  * CapitalViewScreen - The kingdom management hub
  *
- * This is where players manage their kingdom. Currently a placeholder
- * that establishes the UI structure for future features.
+ * This is where players manage their kingdom. Features include
+ * the ability to rename the capital city.
  */
 export function CapitalViewScreen({
+  capitalName,
+  onUpdateCapitalName,
   onBack,
 }: CapitalViewScreenProps): React.ReactElement {
+  // ==============================================
+  // STATE FOR NAME EDITING
+  // ==============================================
+
+  /** Whether the name edit modal is currently shown */
+  const [isEditingName, setIsEditingName] = useState(false);
+
+  /** The current value in the edit input field */
+  const [editedName, setEditedName] = useState(capitalName);
+
+  /** Error message to show if validation fails */
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  // ==============================================
+  // NAME EDITING HANDLERS
+  // ==============================================
+
+  /**
+   * Start editing the capital name.
+   * Opens the edit modal with the current name pre-filled.
+   */
+  function startEditing(): void {
+    setEditedName(capitalName);
+    setNameError(null);
+    setIsEditingName(true);
+  }
+
+  /**
+   * Cancel editing and close the modal.
+   */
+  function cancelEditing(): void {
+    setIsEditingName(false);
+    setNameError(null);
+  }
+
+  /**
+   * Save the edited name.
+   * Validates the name and updates state if valid.
+   */
+  function saveEditedName(): void {
+    const trimmed = editedName.trim();
+
+    // Validation: Name must not be empty
+    if (trimmed.length === 0) {
+      setNameError('Name cannot be empty');
+      return;
+    }
+
+    // Validation: Maximum length
+    if (trimmed.length > 30) {
+      setNameError('Name must be 30 characters or less');
+      return;
+    }
+
+    // Attempt to update the name via callback
+    const success = onUpdateCapitalName(trimmed);
+    if (success) {
+      setIsEditingName(false);
+      setNameError(null);
+    } else {
+      setNameError('Invalid name');
+    }
+  }
+
+  /**
+   * Handle keyboard events in the edit input.
+   * Enter saves, Escape cancels.
+   */
+  function handleKeyDown(e: React.KeyboardEvent): void {
+    if (e.key === 'Enter') {
+      saveEditedName();
+    } else if (e.key === 'Escape') {
+      cancelEditing();
+    }
+  }
+
   return (
     <div className="capital-view-screen">
+      {/* ==============================================
+          NAME EDIT MODAL
+          ============================================== */}
+      {isEditingName && (
+        <div className="modal-overlay" onClick={cancelEditing}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Rename Your Capital</h2>
+
+            <div className="modal-input-group">
+              <label htmlFor="capital-name-input" className="modal-label">
+                Capital Name
+              </label>
+              <input
+                id="capital-name-input"
+                type="text"
+                className={`modal-input ${nameError ? 'input-error' : ''}`}
+                value={editedName}
+                onChange={(e) => {
+                  setEditedName(e.target.value);
+                  setNameError(null);
+                }}
+                onKeyDown={handleKeyDown}
+                maxLength={30}
+                autoFocus
+                placeholder="Enter capital name..."
+              />
+              {nameError && (
+                <span className="error-message">{nameError}</span>
+              )}
+              <span className="char-count">
+                {editedName.length}/30 characters
+              </span>
+            </div>
+
+            <div className="modal-buttons">
+              <button
+                className="btn btn-secondary"
+                onClick={cancelEditing}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={saveEditedName}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ==============================================
           HEADER WITH NAVIGATION
           ============================================== */}
@@ -64,7 +206,17 @@ export function CapitalViewScreen({
         </button>
 
         <div className="capital-title-area">
-          <h1 className="capital-title">The Capital</h1>
+          <div className="capital-name-row">
+            <h1 className="capital-title">{capitalName}</h1>
+            <button
+              className="btn-edit-name"
+              onClick={startEditing}
+              aria-label="Edit capital name"
+              title="Edit capital name"
+            >
+              [Edit]
+            </button>
+          </div>
           <p className="capital-subtitle">Heart of Your Kingdom</p>
         </div>
 

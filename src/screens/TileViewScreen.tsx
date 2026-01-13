@@ -41,64 +41,82 @@ interface TileViewScreenProps {
 }
 
 /**
- * Get a thematic description for a tile based on its name.
+ * Get a thematic description for a tile based on its name and region.
  * This is placeholder content that will eventually come from tile data.
  *
  * @param tileName - The name of the tile
+ * @param region - The region the tile belongs to
  * @returns A descriptive string for the tile
  */
-function getTileDescription(tileName: string): string {
+function getTileDescription(tileName: string, region: string): string {
   // Map of tile names to atmospheric descriptions
   const descriptions: Record<string, string> = {
-    'Eastern Mountains':
-      'Jagged peaks rise before you, their snow-capped summits piercing the clouds. ' +
-      'The air grows thin and cold. Ancient paths wind through the rocky terrain, ' +
-      'promising both danger and the glint of precious minerals.',
+    // Greenbelt Region (North)
+    'Greenbelt NW':
+      'A dense forest stretches before you, ancient oaks and towering pines blocking ' +
+      'much of the sky. The western Greenbelt is home to druid circles and sacred groves. ' +
+      'Mossy stones hint at forgotten shrines, and wildlife watches from the shadows.',
 
-    'Northeastern Hills':
-      'Rolling hills stretch toward the horizon, dotted with crumbling stone structures. ' +
-      'An ancient civilization once thrived here. Now, only ruins remain, ' +
-      'whispering secrets to those brave enough to explore.',
+    'Greenbelt NE':
+      'The eastern edge of the Greenbelt is wild and untamed. Fallen logs and thick ' +
+      'underbrush make travel difficult. Old ruins peek through the canopy - remnants ' +
+      'of failed settlements. Rich lumber resources await those who can tame this land.',
 
-    'Northern Forest':
-      'A vast canopy of ancient trees blocks out the sun, casting the forest floor ' +
-      'in perpetual twilight. Strange sounds echo through the undergrowth. ' +
-      'The forest holds many secrets for those who dare enter.',
+    // Pitax Region (West)
+    'Pitax':
+      'The border territories of Pitax stretch before you. King Irovetti\'s realm is ' +
+      'known for its cultural pretensions and political scheming. Colorful banners ' +
+      'mark the boundary, and distant music carries on the wind. Approach with caution.',
 
-    'Western Plains':
-      'Endless grasslands sway in the wind, golden waves stretching to the horizon. ' +
-      'This fertile land promises bountiful harvests for any who settle here. ' +
-      'But the open terrain offers little protection from threats.',
+    // Brevoy Region (East)
+    'Brevoy':
+      'The borderlands with Brevoy are marked by watchtowers and trading posts. ' +
+      'Noble houses compete for influence here, and merchant caravans travel well-worn ' +
+      'roads. The Swordlords of Restov have long supported ventures into the Stolen Lands.',
 
-    'Southern Marsh':
-      'Murky waters and twisted trees create a labyrinthine swamp. ' +
-      'The air is thick with mist and the buzz of insects. ' +
-      'Rare herbs grow here, but so do deadly creatures.',
+    // Tuskwater Bay Region (South)
+    'Tuskwater Bay SW':
+      'The western shore of Tuskwater Bay is dotted with fishing villages and rocky coves. ' +
+      'The smell of salt and seaweed fills the air. Local fishermen speak of the great ' +
+      'tusked creatures that give the bay its name, and of smugglers who use the hidden inlets.',
 
-    'Southeastern River':
-      'A mighty river carves through the landscape, its waters teeming with fish. ' +
-      'The fertile floodplains could support prosperous settlements. ' +
-      'Trade boats from distant lands sometimes pass through here.',
+    'Tuskwater Bay SE':
+      'The eastern shores of Tuskwater Bay offer calmer waters and natural harbors. ' +
+      'This would be an ideal location for a port town. Trade ships from distant lands ' +
+      'occasionally anchor here, and the fishing is plentiful.',
   };
 
   return descriptions[tileName] ??
-    'An unexplored territory awaits. What mysteries will you uncover?';
+    `This ${region} territory awaits exploration. What mysteries will you uncover?`;
 }
 
 /**
- * Get an icon/emoji representation for a tile based on its name.
+ * Get an icon/emoji representation for a tile based on its name and region.
  * (Using simple text representations since we're not using emoji by default)
  */
-function getTileIcon(tileName: string): string {
+function getTileIcon(tileName: string, region: string): string {
   const icons: Record<string, string> = {
-    'Eastern Mountains': '[Mountain]',
-    'Northeastern Hills': '[Hills]',
-    'Northern Forest': '[Forest]',
-    'Western Plains': '[Plains]',
-    'Southern Marsh': '[Marsh]',
-    'Southeastern River': '[River]',
+    // Greenbelt tiles
+    'Greenbelt NW': '[Forest]',
+    'Greenbelt NE': '[Forest]',
+    // Pitax
+    'Pitax': '[Castle]',
+    // Brevoy
+    'Brevoy': '[Tower]',
+    // Tuskwater Bay tiles
+    'Tuskwater Bay SW': '[Bay]',
+    'Tuskwater Bay SE': '[Harbor]',
   };
-  return icons[tileName] ?? '[Territory]';
+
+  // Fallback icons by region
+  const regionIcons: Record<string, string> = {
+    'Greenbelt': '[Forest]',
+    'Pitax': '[Castle]',
+    'Brevoy': '[Tower]',
+    'Tuskwater Bay': '[Bay]',
+  };
+
+  return icons[tileName] ?? regionIcons[region] ?? '[Territory]';
 }
 
 /**
@@ -112,8 +130,8 @@ export function TileViewScreen({
   onBack,
 }: TileViewScreenProps): React.ReactElement {
 
-  const description = getTileDescription(tile.name);
-  const icon = getTileIcon(tile.name);
+  const description = getTileDescription(tile.name, tile.region);
+  const icon = getTileIcon(tile.name, tile.region);
 
   return (
     <div className="tile-view-screen">
@@ -128,6 +146,14 @@ export function TileViewScreen({
         >
           Back to Global Map
         </button>
+
+        {/* Region indicator in header */}
+        <div className="region-indicator">
+          <span className="region-label">Region:</span>
+          <span className={`region-name region-${tile.region.toLowerCase().replace(' ', '-')}`}>
+            {tile.region}
+          </span>
+        </div>
       </header>
 
       {/* ==============================================
@@ -140,6 +166,11 @@ export function TileViewScreen({
 
           {/* Tile Name */}
           <h1 className="tile-name">{tile.name}</h1>
+
+          {/* Region Badge */}
+          <span className={`tile-region-badge region-${tile.region.toLowerCase().replace(' ', '-')}`}>
+            {tile.region} Region
+          </span>
 
           {/* Tile Type Badge */}
           <span className="tile-type-badge">Wild Territory</span>
