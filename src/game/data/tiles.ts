@@ -65,8 +65,8 @@ export const DEFAULT_CAPITAL_NAME = 'CALMAFAR';
  *        [Tuskwater      [Tuskwater
  *          Bay SW]         Bay SE]
  *
- * The Capital starts as discovered (it's where you begin).
- * All surrounding wild tiles start undiscovered (fog of war).
+ * All tiles are visible from the start (no fog of war).
+ * Movement is restricted to within the same region or to/from the Capital.
  */
 export const INITIAL_TILES: GlobalTile[] = [
   // ==============================================
@@ -79,7 +79,7 @@ export const INITIAL_TILES: GlobalTile[] = [
     position: 'center',
     axial: { q: 0, r: 0 },
     kind: 'capital',
-    discovered: true,  // Always visible - this is where you start!
+    discovered: true,
   },
 
   // ==============================================
@@ -98,7 +98,7 @@ export const INITIAL_TILES: GlobalTile[] = [
     position: 'north-west',
     axial: { q: 0, r: -1 },
     kind: 'wild',
-    discovered: false,
+    discovered: true,
   },
 
   // NORTHEAST - Greenbelt NE (q: +1, r: -1)
@@ -111,7 +111,7 @@ export const INITIAL_TILES: GlobalTile[] = [
     position: 'north-east',
     axial: { q: 1, r: -1 },
     kind: 'wild',
-    discovered: false,
+    discovered: true,
   },
 
   // ==============================================
@@ -130,7 +130,7 @@ export const INITIAL_TILES: GlobalTile[] = [
     position: 'west',
     axial: { q: -1, r: 0 },
     kind: 'wild',
-    discovered: false,
+    discovered: true,
   },
 
   // ==============================================
@@ -149,7 +149,7 @@ export const INITIAL_TILES: GlobalTile[] = [
     position: 'east',
     axial: { q: 1, r: 0 },
     kind: 'wild',
-    discovered: false,
+    discovered: true,
   },
 
   // ==============================================
@@ -168,7 +168,7 @@ export const INITIAL_TILES: GlobalTile[] = [
     position: 'south-west',
     axial: { q: -1, r: 1 },
     kind: 'wild',
-    discovered: false,
+    discovered: true,
   },
 
   // SOUTHEAST - Tuskwater Bay SE (q: 0, r: +1)
@@ -181,7 +181,7 @@ export const INITIAL_TILES: GlobalTile[] = [
     position: 'south-east',
     axial: { q: 0, r: 1 },
     kind: 'wild',
-    discovered: false,
+    discovered: true,
   },
 ];
 

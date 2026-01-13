@@ -156,6 +156,37 @@ export default function App() {
   }
 
   /**
+   * Check if movement between two tiles is allowed based on region rules.
+   *
+   * Movement Rules:
+   * - Can always move to/from the Capital (it's a hub)
+   * - Can move between tiles in the same region
+   * - Cannot move directly between different regions
+   *
+   * This prevents shortcuts like Pitax -> Tuskwater Bay or Greenbelt -> Brevoy.
+   * Players must return to the Capital to switch regions.
+   *
+   * @param fromId - ID of the tile moving from
+   * @param toId - ID of the tile moving to
+   * @returns true if movement is allowed between regions
+   */
+  function isRegionMoveAllowed(fromId: string, toId: string): boolean {
+    const from = tilesById.get(fromId);
+    const to = tilesById.get(toId);
+
+    // If either tile doesn't exist, movement is not allowed
+    if (!from || !to) return false;
+
+    // Capital acts as a hub - can always move to/from Capital
+    if (from.region === 'Capital' || to.region === 'Capital') {
+      return true;
+    }
+
+    // Allow movement within the same region
+    return from.region === to.region;
+  }
+
+  /**
    * Mark a tile as discovered when the player visits it.
    *
    * This updates the tiles array immutably - we create a new array
@@ -184,6 +215,7 @@ export default function App() {
    *
    * Movement Rules:
    * - Can only move to adjacent tiles (no teleporting!)
+   * - Can only move within same region or to/from Capital
    * - Clicking current tile does nothing
    * - Moving to a wild tile opens the Tile View
    * - Moving to the Capital tile stays on Global Map (use button to enter)
@@ -201,10 +233,17 @@ export default function App() {
       return;
     }
 
+    // Validate that movement is allowed between regions
+    if (!isRegionMoveAllowed(partyTileId, tileId)) {
+      // Cannot move between different regions directly
+      // Must return to Capital first to switch regions
+      return;
+    }
+
     // Move is valid! Update party position
     setPartyTileId(tileId);
 
-    // Mark the destination as discovered (reveals fog of war)
+    // Mark the destination as discovered (in case it wasn't already)
     markDiscovered(tileId);
 
     // Navigate to appropriate screen based on destination type
