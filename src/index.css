@@ -224,3 +224,146 @@ a:hover {
   background-color: #ffe44d;
   transform: translateY(-1px);
 }
+
+/* =================================================================
+   5. MODAL STYLES
+   Reusable modal component styles
+   ================================================================= */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-md);
+}
+
+.modal-content {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 450px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-bg-accent);
+}
+
+.modal-title {
+  color: var(--color-capital);
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-lg);
+  text-align: center;
+}
+
+.modal-input-group {
+  margin-bottom: var(--space-lg);
+}
+
+.modal-label {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.modal-input {
+  width: 100%;
+  padding: var(--space-md);
+  background-color: var(--color-bg-accent);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family);
+  transition: border-color var(--transition-fast);
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--color-capital);
+}
+
+.modal-input.input-error {
+  border-color: var(--color-text-accent);
+}
+
+.error-message {
+  display: block;
+  color: var(--color-text-accent);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-sm);
+}
+
+.char-count {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xs);
+  text-align: right;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+}
+
+.modal-buttons .btn {
+  min-width: 100px;
+}
+
+/* =================================================================
+   6. EDIT NAME BUTTON STYLES
+   Small inline button for editing names
+   ================================================================= */
+
+.btn-edit-name {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  padding: var(--space-xs) var(--space-sm);
+  margin-left: var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.btn-edit-name:hover {
+  color: var(--color-capital);
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.btn-edit-name-small {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  padding: var(--space-xs);
+  margin-left: var(--space-xs);
+  transition: color var(--transition-fast);
+}
+
+.btn-edit-name-small:hover {
+  color: var(--color-capital);
+}
+
+/* =================================================================
+   7. REGION COLOR VARIABLES
+   Colors for each region's theming
+   ================================================================= */
+
+:root {
+  /* Region Colors */
+  --color-greenbelt: #228b22;
+  --color-pitax: #8b4513;
+  --color-brevoy: #4682b4;
+  --color-tuskwater-bay: #1e90ff;
+}

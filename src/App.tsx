@@ -25,7 +25,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { INITIAL_TILES } from './game/data/tiles';
+import { INITIAL_TILES, DEFAULT_CAPITAL_NAME } from './game/data/tiles';
 import type { GlobalTile } from './game/types';
 import { GlobalMapScreen } from './screens/GlobalMapScreen';
 import { TileViewScreen } from './screens/TileViewScreen';
@@ -87,6 +87,15 @@ export default function App() {
    */
   const [screen, setScreen] = useState<Screen>({ kind: 'global' });
 
+  /**
+   * capitalName: The player's custom name for their capital city.
+   *
+   * Defaults to "CALMAFAR" but can be renamed by the player.
+   * This name persists throughout the game session and is displayed
+   * on the Global Map and in the Capital View.
+   */
+  const [capitalName, setCapitalName] = useState<string>(DEFAULT_CAPITAL_NAME);
+
   // ==============================================
   // DERIVED STATE (computed from primary state)
   // ==============================================
@@ -101,6 +110,20 @@ export default function App() {
   const tilesById = useMemo(
     () => new Map(tiles.map((t) => [t.id, t])),
     [tiles]
+  );
+
+  /**
+   * tilesWithCapitalName: Tiles array with the capital's name updated
+   * to reflect the player's custom name.
+   *
+   * This ensures the custom capital name is displayed consistently
+   * throughout the game without modifying the base tile data structure.
+   */
+  const tilesWithCapitalName = useMemo(
+    () => tiles.map((t) =>
+      t.id === 'capital' ? { ...t, name: capitalName } : t
+    ),
+    [tiles, capitalName]
   );
 
   // ==============================================
@@ -217,6 +240,33 @@ export default function App() {
     }
   }
 
+  /**
+   * Update the capital's custom name.
+   *
+   * Validates the new name and updates state if valid:
+   * - Name must not be empty (after trimming whitespace)
+   * - Name has a maximum length of 30 characters
+   *
+   * @param newName - The new name for the capital
+   * @returns true if the name was updated, false if validation failed
+   */
+  function updateCapitalName(newName: string): boolean {
+    const trimmedName = newName.trim();
+
+    // Validation: Name must not be empty
+    if (trimmedName.length === 0) {
+      return false;
+    }
+
+    // Validation: Maximum length of 30 characters
+    if (trimmedName.length > 30) {
+      return false;
+    }
+
+    setCapitalName(trimmedName);
+    return true;
+  }
+
   // ==============================================
   // SCREEN RENDERING
   // Based on current screen state, render the appropriate view
@@ -226,17 +276,25 @@ export default function App() {
   if (screen.kind === 'global') {
     return (
       <GlobalMapScreen
-        tiles={tiles}
+        tiles={tilesWithCapitalName}
         partyTileId={partyTileId}
+        capitalName={capitalName}
         onAttemptMoveTo={attemptMoveTo}
         onEnterCapital={enterCapital}
+        onUpdateCapitalName={updateCapitalName}
       />
     );
   }
 
   // Capital View - city management
   if (screen.kind === 'capital') {
-    return <CapitalViewScreen onBack={backToGlobal} />;
+    return (
+      <CapitalViewScreen
+        capitalName={capitalName}
+        onUpdateCapitalName={updateCapitalName}
+        onBack={backToGlobal}
+      />
+    );
   }
 
   // Tile View - detailed view of a wild tile

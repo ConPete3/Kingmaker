@@ -46,11 +46,14 @@ interface HexMapProps {
 }
 
 /**
- * Get the fill color for a tile based on its state.
+ * Get the fill color for a tile based on its state and region.
  *
  * Color scheme:
  * - Capital (discovered): Gold color to show importance
- * - Wild (discovered): Forest green for explored territory
+ * - Greenbelt (discovered): Forest green
+ * - Pitax (discovered): Brown (earthy, rival kingdom)
+ * - Brevoy (discovered): Steel blue (nobility)
+ * - Tuskwater Bay (discovered): Ocean blue (maritime)
  * - Undiscovered: Dark gray to represent fog of war
  *
  * @param tile - The tile to get the color for
@@ -67,8 +70,15 @@ function getTileFillColor(tile: GlobalTile): string {
     return '#ffd700';
   }
 
-  // Discovered wild tiles - green terrain
-  return '#4a6741';
+  // Region-specific colors for discovered wild tiles
+  const regionColors: Record<string, string> = {
+    'Greenbelt': '#4a6741',      // Forest green
+    'Pitax': '#6b4423',          // Brown (earthy)
+    'Brevoy': '#3a5a7c',         // Steel blue
+    'Tuskwater Bay': '#2a5a7a',  // Ocean blue
+  };
+
+  return regionColors[tile.region] ?? '#4a6741';
 }
 
 /**
@@ -80,6 +90,45 @@ function getTileStrokeColor(tile: GlobalTile): string {
     return '#1a1a1a';  // Very dark for undiscovered
   }
   return '#2c2c2c';    // Dark gray for discovered
+}
+
+/**
+ * Split a tile name into multiple lines for display.
+ * Long names like "Tuskwater Bay SW" are split to fit in the hex.
+ *
+ * @param name - The tile name to split
+ * @returns Array of lines to display
+ */
+function splitTileName(name: string): string[] {
+  // Special handling for specific tile names
+  if (name.includes('Tuskwater Bay')) {
+    const parts = name.split('Tuskwater Bay');
+    const suffix = parts[1]?.trim() || '';
+    return suffix ? ['Tuskwater', 'Bay ' + suffix] : ['Tuskwater', 'Bay'];
+  }
+
+  if (name.includes('Greenbelt')) {
+    const parts = name.split('Greenbelt');
+    const suffix = parts[1]?.trim() || '';
+    return suffix ? ['Greenbelt', suffix] : ['Greenbelt'];
+  }
+
+  // For shorter names or capital, return as single line
+  if (name.length <= 12) {
+    return [name];
+  }
+
+  // Try to split at space for other long names
+  const words = name.split(' ');
+  if (words.length >= 2) {
+    const mid = Math.ceil(words.length / 2);
+    return [
+      words.slice(0, mid).join(' '),
+      words.slice(mid).join(' '),
+    ];
+  }
+
+  return [name];
 }
 
 /**
@@ -179,18 +228,37 @@ export function HexMap({
             />
 
             {/* Tile label - shows name if discovered, "???" otherwise */}
-            <text
-              x={tile.cx}
-              y={tile.cy}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="hex-label"
-              fill={textColor}
-              fontSize="11"
-              fontWeight={tile.kind === 'capital' ? 'bold' : 'normal'}
-            >
-              {tile.discovered ? tile.name : '???'}
-            </text>
+            {tile.discovered ? (
+              // Multi-line text for discovered tiles
+              splitTileName(tile.name).map((line, index, arr) => (
+                <text
+                  key={index}
+                  x={tile.cx}
+                  y={tile.cy + (index - (arr.length - 1) / 2) * 12}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="hex-label"
+                  fill={textColor}
+                  fontSize="10"
+                  fontWeight={tile.kind === 'capital' ? 'bold' : 'normal'}
+                >
+                  {line}
+                </text>
+              ))
+            ) : (
+              // Single "???" for undiscovered tiles
+              <text
+                x={tile.cx}
+                y={tile.cy}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="hex-label"
+                fill={textColor}
+                fontSize="11"
+              >
+                ???
+              </text>
+            )}
 
             {/* Visual indicator for capital tile */}
             {tile.kind === 'capital' && tile.discovered && (
